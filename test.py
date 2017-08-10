@@ -49,17 +49,17 @@ class MyTelnet(object):
     #移动olt登陆操作
     def telnetOlt(self,oltip,frameid,slotid,option,portid,ontid):
         mystr = '''SNHZ-912-OLT-TXZ01-HW-MA5680T>()telnet %s
-        { <cr>|service-port<U><1,65535> }:()23
-        >>User name:()lipeng
-        >>User password:()hzwg20133
-        SNHZ-906-OLT-XGS01-HW-MA5680T>()enable
-        SNHZ-906-OLT-XGS01-HW-MA5680T#()config
-        SNHZ-906-OLT-XGS01-HW-MA5680T(config)#()interface  gpon %s/%s
-        SNHZ-906-OLT-XGS01-HW-MA5680T(config-if-gpon-0/15)#()ont %s %s %s
-        SNHZ-906-OLT-XGS01-HW-MA5680T(config-if-gpon-0/15)#()quit
-        SNHZ-906-OLT-XGS01-HW-MA5680T(config)#()quit
-        SNHZ-906-OLT-XGS01-HW-MA5680T#()quit
-        Are you sure to log out? (y/n)[n]:()y'''%(oltip,frameid,slotid,option,portid,ontid)
+{ <cr>|service-port<U><1,65535> }:()23
+>>User name:()lipeng
+>>User password:()hzwg20133
+MA5680T>()enable
+MA5680T#()config
+MA5680T(config)#()interface  gpon %s/%s
+MA5680T(config-if-gpon-0/15)#()ont %s %s %s
+MA5680T(config-if-gpon-0/15)#()quit
+MA5680T(config)#()quit
+MA5680T#()quit
+Are you sure to log out? (y/n)[n]:()y'''%(oltip,frameid,slotid,option,portid,ontid)
 
         try:
             for line in mystr.splitlines():
