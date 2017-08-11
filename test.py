@@ -59,7 +59,7 @@ HW-MA5680T\(config-if-gpon-%s/%s\)#()ont %s %s %s
 HW-MA5680T\(config-if-gpon-%s/%s\)#()quit
 HW-MA5680T\(config\)#()quit
 HW-MA5680T#()quit
-Are you sure to log out? (y/n)[n]:()y'''%(oltip,frameid,slotid,frameid,slotid,option,portid,ontid,frameid,slotid)
+Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slotid,option,portid,ontid,frameid,slotid)
 
         try:
             for line in mystr.splitlines():
