@@ -50,34 +50,28 @@ class MyTelnet(object):
     def telnetOlt(self,oltip,frameid,slotid,option,portid,ontid):
         mystr = '''SNHZ-912-OLT-TXZ01-HW-MA5680T>()telnet %s
 { <cr>|service-port<U><1,65535> }:()23
->>User name:()lipeng
->>User password:()hzwg20133
-MA5680T>()enable
-MA5680T#()config
-MA5680T(config)#()interface  gpon %s/%s
-MA5680T(config-if-gpon-0/15)#()ont %s %s %s
-MA5680T(config-if-gpon-0/15)#()quit
-MA5680T(config)#()quit
-MA5680T#()quit
-Are you sure to log out? (y/n)[n]:()y'''%(oltip,frameid,slotid,option,portid,ontid)
+>>User name:()username
+>>User password:()password
+HW-MA5680T>()enable
+HW-MA5680T#()config
+HW-MA5680T\(config\)#()interface  gpon %s/%s
+HW-MA5680T\(config-if-gpon-%s/%s\)#()ont %s %s %s
+HW-MA5680T\(config-if-gpon-%s/%s\)#()quit
+HW-MA5680T\(config\)#()quit
+HW-MA5680T#()quit
+Are you sure to log out? (y/n)[n]:()y'''%(oltip,frameid,slotid,frameid,slotid,option,portid,ontid,frameid,slotid)
 
         try:
             for line in mystr.splitlines():
                 bar.submove()
                 command = line.split('()')
-                if command[1] == 'lipeng':
-                    telnetresult = self.kconobj.read_until(command[0].encode('ascii'),5)
-                    m = re.search(b".*User name:$",telnetresult)
-                    if m:
-                        bar.log("telnet " + oltip + " success")
-                        self.kconobj.write(command[1].encode('ascii') + b"\n")
-                    else:
-                        bar.log("telnet " + oltip + " fail")
-                        break
-                else:
-                    telnetresult = self.kconobj.read_until(command[0].encode('ascii'),1)
+                m = self.kconobj.expect([b".*%s$"%command[0].encode('ascii')],5)
+                if m:
+                    bar.log(m[2].decode('ascii'))
                     self.kconobj.write(command[1].encode('ascii') + b"\n")
-                    bar.log(telnetresult)
+                else:
+                    bar.log(m[0:2]+"The expected value " + line + ", maybe timeout")
+                    break
         except:
             pass
 
@@ -103,21 +97,21 @@ if __name__=="__main__":
 
     #显示菜单
     showmenu()
-    userinput=input("请输入你要执行的操作选项:")
+    userinput = input("请输入你要执行的操作选项:")
 
     #必要的实例化
-    k=MyTelnet()
+    k = MyTelnet()
     f = open("./str2.txt",'r+')
     count = len(f.readlines())
     bar = ProgressBar(total = count)
     #连接跳板
-    k.telnetTxzOlt('172.24.67.2','lipeng','hzwg20133')
+    k.telnetTxzOlt('1.1.1.1','username','password')
 
     while not userinput:
-        userinput=input("请务必输入一个选项:")
+        userinput = input("请务必输入一个选项:")
     else:
         #提交主体命令区域,显示一些常用信息
-        if userinput=='1':
+        if userinput == '1':
             option = 'deactivate'
             for line in open("./str2.txt",'r+'):
                 bar.subcount = 0
@@ -125,12 +119,12 @@ if __name__=="__main__":
                 ontinfo = line.strip('\n').split('/')
                 k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],option,ontinfo[3],ontinfo[4])
             k.kcloseme
-        elif userinput=='2':
+        elif userinput == '2':
             option = 'activate'
             for line in open("./str2.txt",'r+'):
+                bar.subcount = 0
                 bar.move()
                 ontinfo = line.strip('\n').split('/')
-                bar.log('正在 ' + option + ' ONT信息 ' +line.strip('\n') )
                 k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],option,ontinfo[3],ontinfo[4])
             k.kcloseme
         else:
