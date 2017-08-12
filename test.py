@@ -50,7 +50,7 @@ class MyTelnet(object):
     #移动olt登陆操作
     def telnetOlt(self,oltip,frameid,slotid,option,portid,ontid):
         mystr = '''SNHZ-912-OLT-TXZ01-HW-MA5680T>()telnet %s
-{ <cr>|service-port<U><1,65535> }:()23
+service-port<U><1,65535> \}:()23
 >>User name:()xxxx
 >>User password:()xxxxxx
 HW-MA5\d{3}T>()enable
