@@ -2,7 +2,7 @@ import telnetlib,re,sys,time
 
 #进度条类
 class ProgressBar:
-    def __init__(self, count = 0, total = 0, width = 50,subtotal = 12,subcount = 0):
+    def __init__(self, count = 0, total = 0, width = 50,subtotal = 14,subcount = 0):
         self.count = count
         self.total = total
         self.width = width
@@ -25,7 +25,6 @@ class ProgressBar:
         sys.stdout.write('#' * progress + '-' * (self.width - progress) + '\r')
         if (progress == self.width) and (self.count == self.total):
             sys.stdout.write('\n')
-            self.f.close()
         sys.stdout.flush()
 
 # Telnet连接类
@@ -36,30 +35,33 @@ class MyTelnet(object):
         self.kconobj=telnetlib.Telnet()
 
     # 登陆跳板
-    def telnetTxzOlt(self,host='x.x.x.x',username='xxxx',password='xxxx'):
+    def telnetTxzOlt(self,host='172.24.67.2',username='autosend',password='hzwg20133'):
         try:
             self.kconobj.open(host,23)
             self.kconobj.read_until(b'>>User name:',5)
             self.kconobj.write(username.encode('ascii') + b"\n")
             self.kconobj.read_until(b">>User password:")
             self.kconobj.write(password.encode('ascii') + b"\n")
+            bar.log("telnet TXZolt Success")
         except:
             pass
 
     #移动olt登陆操作
     def telnetOlt(self,oltip,frameid,slotid,option,portid,ontid):
         mystr = '''SNHZ-912-OLT-TXZ01-HW-MA5680T>()telnet %s
-{ <cr>|service-port<U><1,65535> }:()23
->>User name:()xxxx
->>User password:()xxxx
+service-port<U><1,65535> \}:()23
+>>User name:()lipeng
+>>User password:()hzwg20133
 HW-MA5\d{3}T>()enable
 HW-MA5\d{3}T#()config
 HW-MA5\d{3}T\(config\)#()interface  gpon %s/%s
+HW-MA5\d{3}T\(config-if-gpon-%s/%s\)#()display ont optical-info %s %s
+(HW-MA5\d{3}T\(config-if-gpon-%s/%s\)#|\( Press 'Q' to break \) ----)()   
 HW-MA5\d{3}T\(config-if-gpon-%s/%s\)#()ont %s %s %s
 HW-MA5\d{3}T\(config-if-gpon-%s/%s\)#()quit
 HW-MA5\d{3}T\(config\)#()quit
 HW-MA5\d{3}T#()quit
-Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slotid,option,portid,ontid,frameid,slotid)
+Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slotid,portid,ontid,frameid,slotid,frameid,slotid,option,portid,ontid,frameid,slotid)
 
         try:
             for line in mystr.splitlines():
@@ -67,6 +69,9 @@ Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slot
                 command = line.split('()')
                 m = self.kconobj.expect([b".*%s$"%command[0].encode('ascii')],10)
                 if m and m[1]:
+                    if command[1] == "ont %s %s %s"%(option,portid,ontid):
+                        result = re.findall("OLT Rx ONT optical power(.*?)\r\n",m[2].decode('ascii'))
+                        info.write("%s - IP:%s,%s/%s/%s/%s optical-info - OLT Rx ONT optical power%s \n"%(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())),oltip,frameid,slotid,portid,ontid,result[0]))
                     bar.log(m[2].decode('ascii'))
                     self.kconobj.write(command[1].encode('ascii') + b"\n")
                 else:
@@ -74,8 +79,8 @@ Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slot
                     self.kcloseme
                     self.telnetTxzOlt()
                     break
-        except:
-            bar.log("try error " + line + ", system error!")
+        except ZeroDivisionError as e:  
+            print("try error " + line + e)
             self.kcloseme
             self.telnetTxzOlt()
 
@@ -91,6 +96,7 @@ if __name__=="__main__":
     k.telnetTxzOlt()
     filename = "./ont" + sys.argv[2] + ".txt"
     f = open(filename,'r+')
+    info = open("./log/optical.txt",'a')
     fl = f.readlines()
     bar = ProgressBar(total = len(fl))
 
@@ -101,3 +107,5 @@ if __name__=="__main__":
         k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],sys.argv[1],ontinfo[3],ontinfo[4])
     k.kcloseme
     f.close()
+    info.close()
+    bar.f.close()
