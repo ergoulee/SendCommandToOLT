@@ -52,13 +52,13 @@ class MyTelnet(object):
 { <cr>|service-port<U><1,65535> }:()23
 >>User name:()username
 >>User password:()password
-HW-MA5680T>()enable
-HW-MA5680T#()config
-HW-MA5680T\(config\)#()interface  gpon %s/%s
-HW-MA5680T\(config-if-gpon-%s/%s\)#()ont %s %s %s
-HW-MA5680T\(config-if-gpon-%s/%s\)#()quit
-HW-MA5680T\(config\)#()quit
-HW-MA5680T#()quit
+HW-MA56\d{2}T>()enable
+HW-MA56\d{2}T#()config
+HW-MA56\d{2}T\(config\)#()interface  gpon %s/%s
+HW-MA56\d{2}T\(config-if-gpon-%s/%s\)#()ont %s %s %s
+HW-MA56\d{2}T\(config-if-gpon-%s/%s\)#()quit
+HW-MA56\d{2}T\(config\)#()quit
+HW-MA56\d{2}T#()quit
 Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slotid,option,portid,ontid,frameid,slotid)
 
         try:
@@ -94,38 +94,18 @@ def showmenu():
 
 
 if __name__=="__main__":
-
-    #显示菜单
-    showmenu()
-    userinput = input("请输入你要执行的操作选项:")
-
     #必要的实例化
     k = MyTelnet()
-    f = open("./str2.txt",'r+')
+    f = open("./ont1.txt",'r+')
     count = len(f.readlines())
     bar = ProgressBar(total = count)
     #连接跳板
-    k.telnetTxzOlt('1.1.1.1','username','password')
+    k.telnetTxzOlt('172.24.67.2','autosend','hzwg20133')
 
-    while not userinput:
-        userinput = input("请务必输入一个选项:")
-    else:
-        #提交主体命令区域,显示一些常用信息
-        if userinput == '1':
-            option = 'deactivate'
-            for line in open("./str2.txt",'r+'):
-                bar.subcount = 0
-                bar.move()
-                ontinfo = line.strip('\n').split('/')
-                k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],option,ontinfo[3],ontinfo[4])
-            k.kcloseme
-        elif userinput == '2':
-            option = 'activate'
-            for line in open("./str2.txt",'r+'):
-                bar.subcount = 0
-                bar.move()
-                ontinfo = line.strip('\n').split('/')
-                k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],option,ontinfo[3],ontinfo[4])
-            k.kcloseme
-        else:
-            print("选择错误")
+    option = 'deactivate'
+    for line in open("./ont1.txt",'r+'):
+        bar.subcount = 0
+        bar.move()
+        ontinfo = line.strip('\n').split('/')
+        k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],sys.argv[1],ontinfo[3],ontinfo[4])
+    k.kcloseme
