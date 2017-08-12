@@ -9,7 +9,7 @@ class ProgressBar:
         self.width = width
         self.subtotal = subtotal
         self.subcount = subcount
-        self.logname = "./log/%s log1.txt"%time.strftime('%Y-%m-%d',time.localtime(time.time()))
+        self.logname = "./log/%s log%s.txt"%(time.strftime('%Y-%m-%d',time.localtime(time.time())),sys.argv[2])
         self.f = open(self.logname,'a')
     def move(self):
         self.count += 1
@@ -84,14 +84,13 @@ Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slot
 if __name__=="__main__":
     #必要的实例化
     k = MyTelnet()
-    f = open("./ont1.txt",'r+')
-    count = len(f.readlines())
-    bar = ProgressBar(total = count)
     #连接跳板
-    k.telnetTxzOlt('1.1.1.2','autosend','xxxxxx')
+    k.telnetTxzOlt('172.24.67.2','autosend','hzwg20133')
+    filename = "./ont" + sys.argv[2] + ".txt"
+    f = open(filename,'r+').readlines()
+    bar = ProgressBar(total = len(f))
 
-    option = 'deactivate'
-    for line in open("./ont1.txt",'r+'):
+    for line in f:
         bar.subcount = 0
         bar.move()
         ontinfo = line.strip('\n').split('/')
