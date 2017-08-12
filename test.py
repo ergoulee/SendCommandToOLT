@@ -1,4 +1,5 @@
 import telnetlib,re,sys,time
+from sys import argv
 
 #进度条类
 class ProgressBar:
@@ -8,7 +9,7 @@ class ProgressBar:
         self.width = width
         self.subtotal = subtotal
         self.subcount = subcount
-        self.logname = "./log/%s log.txt"%time.strftime('%Y-%m-%d',time.localtime(time.time()))
+        self.logname = "./log/%s log1.txt"%time.strftime('%Y-%m-%d',time.localtime(time.time()))
         self.f = open(self.logname,'a')
     def move(self):
         self.count += 1
@@ -50,27 +51,27 @@ class MyTelnet(object):
     def telnetOlt(self,oltip,frameid,slotid,option,portid,ontid):
         mystr = '''SNHZ-912-OLT-TXZ01-HW-MA5680T>()telnet %s
 { <cr>|service-port<U><1,65535> }:()23
->>User name:()username
->>User password:()password
-HW-MA56\d{2}T>()enable
-HW-MA56\d{2}T#()config
-HW-MA56\d{2}T\(config\)#()interface  gpon %s/%s
-HW-MA56\d{2}T\(config-if-gpon-%s/%s\)#()ont %s %s %s
-HW-MA56\d{2}T\(config-if-gpon-%s/%s\)#()quit
-HW-MA56\d{2}T\(config\)#()quit
-HW-MA56\d{2}T#()quit
+>>User name:()xxxx
+>>User password:()xxxxxx
+HW-MA5\d{3}T>()enable
+HW-MA5\d{3}T#()config
+HW-MA5\d{3}T\(config\)#()interface  gpon %s/%s
+HW-MA5\d{3}T\(config-if-gpon-%s/%s\)#()ont %s %s %s
+HW-MA5\d{3}T\(config-if-gpon-%s/%s\)#()quit
+HW-MA5\d{3}T\(config\)#()quit
+HW-MA5\d{3}T#()quit
 Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slotid,option,portid,ontid,frameid,slotid)
 
         try:
             for line in mystr.splitlines():
                 bar.submove()
                 command = line.split('()')
-                m = self.kconobj.expect([b".*%s$"%command[0].encode('ascii')],5)
-                if m:
+                m = self.kconobj.expect([b".*%s$"%command[0].encode('ascii')],10)
+                if m and m[1]:
                     bar.log(m[2].decode('ascii'))
                     self.kconobj.write(command[1].encode('ascii') + b"\n")
                 else:
-                    bar.log(m[0:2]+"The expected value " + line + ", maybe timeout")
+                    bar.log("The expected value " + line + ", maybe timeout")
                     break
         except:
             pass
@@ -78,19 +79,6 @@ Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slot
     #关闭通道方法
     def kcloseme(self):
         self.kconobj.close()
-
-#定义一个菜单
-def showmenu():
-
-    print ('''
-
-
-    *************** 操作选项 ***************
-
-    1.批量去激活ONT
-    2.批量激活ONT
-
-    ''' )
 
 
 if __name__=="__main__":
@@ -100,7 +88,7 @@ if __name__=="__main__":
     count = len(f.readlines())
     bar = ProgressBar(total = count)
     #连接跳板
-    k.telnetTxzOlt('172.24.67.2','autosend','hzwg20133')
+    k.telnetTxzOlt('1.1.1.2','autosend','xxxxxx')
 
     option = 'deactivate'
     for line in open("./ont1.txt",'r+'):
