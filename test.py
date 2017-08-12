@@ -1,5 +1,4 @@
 import telnetlib,re,sys,time
-from sys import argv
 
 #进度条类
 class ProgressBar:
@@ -37,7 +36,7 @@ class MyTelnet(object):
         self.kconobj=telnetlib.Telnet()
 
     # 登陆跳板
-    def telnetTxzOlt(self,host,username,password):
+    def telnetTxzOlt(self,host='x.x.x.x',username='xxxx',password='xxxx'):
         try:
             self.kconobj.open(host,23)
             self.kconobj.read_until(b'>>User name:',5)
@@ -50,9 +49,9 @@ class MyTelnet(object):
     #移动olt登陆操作
     def telnetOlt(self,oltip,frameid,slotid,option,portid,ontid):
         mystr = '''SNHZ-912-OLT-TXZ01-HW-MA5680T>()telnet %s
-service-port<U><1,65535> \}:()23
+{ <cr>|service-port<U><1,65535> }:()23
 >>User name:()xxxx
->>User password:()xxxxxx
+>>User password:()xxxx
 HW-MA5\d{3}T>()enable
 HW-MA5\d{3}T#()config
 HW-MA5\d{3}T\(config\)#()interface  gpon %s/%s
@@ -72,9 +71,13 @@ Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slot
                     self.kconobj.write(command[1].encode('ascii') + b"\n")
                 else:
                     bar.log("The expected value " + line + ", maybe timeout")
+                    self.kcloseme
+                    self.telnetTxzOlt()
                     break
         except:
-            pass
+            bar.log("try error " + line + ", system error!")
+            self.kcloseme
+            self.telnetTxzOlt()
 
     #关闭通道方法
     def kcloseme(self):
@@ -85,14 +88,16 @@ if __name__=="__main__":
     #必要的实例化
     k = MyTelnet()
     #连接跳板
-    k.telnetTxzOlt('172.24.67.2','autosend','hzwg20133')
+    k.telnetTxzOlt()
     filename = "./ont" + sys.argv[2] + ".txt"
-    f = open(filename,'r+').readlines()
-    bar = ProgressBar(total = len(f))
+    f = open(filename,'r+')
+    fl = f.readlines()
+    bar = ProgressBar(total = len(fl))
 
-    for line in f:
+    for line in fl:
         bar.subcount = 0
         bar.move()
         ontinfo = line.strip('\n').split('/')
         k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],sys.argv[1],ontinfo[3],ontinfo[4])
     k.kcloseme
+    f.close()
