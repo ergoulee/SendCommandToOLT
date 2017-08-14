@@ -18,7 +18,7 @@ class ProgressBar:
         sys.stdout.write(' ' * (self.width + 9) + '\r')
         sys.stdout.flush()
         if s != '':
-            self.f.write("%s - log - %s \n"%(now,s))
+            self.f.write("%s - log - %s \n"%(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())),s))
         progress = self.width * self.subcount / self.subtotal
         progress = int(progress)
         sys.stdout.write('{0:3}/{1:3}: '.format(self.count, self.total))
@@ -71,6 +71,7 @@ Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slot
                 if m and m[1]:
                     if command[1] == "ont %s %s %s"%(option,portid,ontid):
                         result = re.findall("OLT Rx ONT optical power(.*?)\r\n",m[2].decode('ascii'))
+                        now = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
                         if result:
                             info.write("%s - IP:%s,%s/%s/%s/%s optical-info - OLT Rx ONT optical power%s \n"%(now,oltip,frameid,slotid,portid,ontid,result[0]))
                         else:
@@ -99,7 +100,6 @@ if __name__=="__main__":
     k.telnetTxzOlt()
     filename = "./ont" + sys.argv[2] + ".txt"
     today = time.strftime('%Y-%m-%d',time.localtime(time.time()))
-    now = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
     f = open(filename,'r+')
     info = open("./log/%s optical-info.txt"%today,'a')
     fl = f.readlines()
