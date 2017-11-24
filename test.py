@@ -69,7 +69,7 @@ Are you sure to log out\? \(y/n\)\[n\]:()y'''%(oltip,frameid,slotid,frameid,slot
                 command = line.split('()')
                 m = self.kconobj.expect([b".*%s$"%command[0].encode('ascii')],10)
                 if m and m[1]:
-                    if command[1] == "ont %s %s %s"%(option,portid,ontid):
+                    if command[1] == "   " and option == "deactivate":
                         result = re.findall("OLT Rx ONT optical power(.*?)\r\n",m[2].decode('ascii'))
                         now = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
                         if result:
