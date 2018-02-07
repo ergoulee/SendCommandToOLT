@@ -114,10 +114,4 @@ if __name__ == "__main__":
     Parser = Parser()
     Outputer = Outputer()
     SpiderMain = SpiderMain()
-    while 1: 
-        now_hour = time.strftime('%H',time.localtime(time.time()))
-        now_hour = int(now_hour)
-        if  now_hour > 7  and now_hour < 23:
-            SpiderMain.craw()
-            print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())) #打印时间 
-            time.sleep(3600)
+    SpiderMain.craw()
