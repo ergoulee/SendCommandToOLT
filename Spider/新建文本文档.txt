@@ -1,0 +1,7 @@
+{"flag":"0","orgId":610000,"orgName":null,"orgGrade":2,"orgIdSeq":"100000.610000.610100.","type":"gd_zj_jg","participantId":null,"typeDto":0,"orderType":0,"busiType":0,"timeslot":0,"shardingId":61,"dealuserId":"undefined","productType":40,"jyType":0,"startTime":"2017-12-25 11:14:13","endTime":"2017-12-26 11:14:16","startTimeStr":null,"endTimeStr":null,"archTimeStart":null,"archTimeEnd":null,"time":null,"workAction":0,"queryFlag":2,"accessWay":"other","quyuType":0,"ifcountry":0,"tvtype":0};
+
+
+
+
+
+{"flag":"0","orgId":610000,"orgName":null,"orgGrade":2,"orgIdSeq":"100000.610000.610100.","type":"gd_zj_td","participantId":null,"typeDto":0,"orderType":0,"busiType":0,"timeslot":0,"shardingId":61,"dealuserId":"undefined","productType":40,"jyType":0,"startTime":"2017-12-25 11:14:13","endTime":"2017-12-26 11:14:16","startTimeStr":null,"endTimeStr":null,"archTimeStart":null,"archTimeEnd":null,"time":null,"workAction":0,"queryFlag":2,"accessWay":"other","quyuType":0,"ifcountry":0,"tvtype":0};
