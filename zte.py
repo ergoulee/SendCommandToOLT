@@ -2,7 +2,7 @@ import telnetlib,re,sys,time
 
 #进度条类
 class ProgressBar:
-    def __init__(self, count = 0, total = 0, width = 50,subtotal = 14,subcount = 0):
+    def __init__(self, count = 0, total = 0, width = 50,subtotal = 10,subcount = 0):
         self.count = count
         self.total = total
         self.width = width
@@ -48,12 +48,11 @@ class MyTelnet(object):
 
     #移动olt登陆操作
     def telnetOlt(self,oltip,frameid,slotid,portid,ontid,option):
-        mystr = '''SNHZ-912-OLT-TXZ01-HW-MA5680T>()telnet %s
-service-port<U><1,65535> \}:()23
->>User name:()zte
->>User password:()KX!@#zte
-ZX-C300#()configure termainal
-ZX-C300\(config\)#()int gpon-onu_%s/%s/%s:%s
+        mystr = '''SNHZ-912-OLT-TXZ01-HW-MA5680T>()telnet %s 23
+Username:()zte
+Password:()KX!@#zte
+ZX-C300#()configure terminal
+ZX-C300\(config\)#()interface gpon-onu_%s/%s/%s:%s
 ZX-C300\(config-if\)#()%s
 ZX-C300\(config-if\)#()exit
 ZX-C300\(config\)#()exit
@@ -93,12 +92,17 @@ if __name__=="__main__":
     #info = open("./log/%s optical-info.txt"%today,'a')
     fl = f.readlines()
     bar = ProgressBar(total = len(fl))
+    if sys.argv[1] == "0":
+        option = "shutdown"
+    if sys.argv[1] == "1":
+        option = "no shutdown"
+    print(option)
 
     for line in fl:
         bar.subcount = 0
         bar.move()
         ontinfo = line.strip('\n').split('/')
-        k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],ontinfo[3],ontinfo[4],sys.argv[1])
+        k.telnetOlt(ontinfo[0],ontinfo[1],ontinfo[2],ontinfo[3],ontinfo[4],option)
     k.kcloseme
     f.close()
-    bar.f.close()
+bar.f.close()
